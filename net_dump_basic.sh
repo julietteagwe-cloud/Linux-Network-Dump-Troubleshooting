@@ -1,5 +1,5 @@
- #!/usr/bin/bash
- #------------------------------------------
+#!/usr/bin/bash
+#------------------------------------------
 
 # Script Name : networinfo_dump_basic.sh
 # Author      : Juliette Joseph-Odogbo
@@ -9,11 +9,11 @@
 #----------------------------------------------------------
 #---------Set Variables---------------------- These variables store my nam. date, purpose and output path
 NAME="Juliette-Joseph-Odogbo" # my name
-DATE="$(datwe =%Y-%m-%d)"  # current date
+DATE="$(date =%Y-%m-%d)"  # current date
 PURPOSE="networkinfo_dump" # purpose of the script
 mkdir -p "$OUTFILE" create the folder if it does not exist
 OUTFILE="$OUTFILE/${PURPOSE}_${DATE}_${NAME}.txt" # output file saved in my home folder which includemy name, date and purpose
-HOSTNAME="$(hostname)" # automatically setect system hostname
+HOSTNAME="$(hostname)" # automatically detect system hostname
 #==========================================================
 # Section Header
 #=======================================
