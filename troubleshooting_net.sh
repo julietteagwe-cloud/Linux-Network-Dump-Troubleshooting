@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 # ============================================================
 # Script Name : Tips for Troubleshooting Network Problems
