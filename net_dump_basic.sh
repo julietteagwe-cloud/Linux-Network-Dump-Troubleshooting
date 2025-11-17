@@ -7,12 +7,12 @@
 # Purpose     : This script gathers essential system and network information for Ubuntu and CentOS
 # Tested On   : Ubuntu server  and CentOS server 
 #----------------------------------------------------------
-#---------Set Variables---------------------- These variables store my nam. date, purpose and output path
+#---------Set Variables---------------------- These variables store my name. date, purpose and output path
 NAME="Juliette-Joseph-Odogbo" # my name
 DATE="$(date =%Y-%m-%d)"  # current date
 PURPOSE="networkinfo_dump" # purpose of the script
-mkdir -p "$OUTFILE" create the folder if it does not exist
-OUTFILE="$OUTFILE/${PURPOSE}_${DATE}_${NAME}.txt" # output file saved in my home folder which includemy name, date and purpose
+mkdir -p "$OUTFILE" # create the folder if it does not exist
+OUTFILE="$OUTFILE/${PURPOSE}_${DATE}_${NAME}.txt" # output file saved in my home folder which include my name, date and purpose
 HOSTNAME="$(hostname)" # automatically detect system hostname
 #==========================================================
 # Section Header
@@ -41,7 +41,7 @@ echo " "
 # uname -a shows kernel version, OS version and architecture
 # ============================================
 
-echo " ==== SYSTEM INFORMATION ===="  >>  "$OUTFILE"   # Section tile (print to screen and file)
+echo " ==== SYSTEM INFORMATION ===="  >>  "$OUTFILE"   # (print to screen and file)
 
 echo " Command: uname -a"  >> "$OUTFILE"               # Shows which command will run
 
