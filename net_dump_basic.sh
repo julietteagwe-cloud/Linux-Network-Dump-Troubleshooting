@@ -95,7 +95,7 @@ echo " " >>  "$OUTFILE"
 # (Optional: infconfig only if installed- may not exist on both servers.
 
 if command -v ifconfig  >/dev/null 2>&1;then
-   echo "Command : ifconfig ( Legacy command, works  if net-tools is installed)" >>  "$OUTFILE"
+   echo "Command : ifconfig  Legacy command, works  #if net-tools is installed " >>  "$OUTFILE"
    ifconfig >> "$OUTFILE"
 
    echo " " >>  "$OUTFILE"
