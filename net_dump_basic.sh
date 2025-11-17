@@ -4,7 +4,7 @@
 # ============================================
 
 # SYSTEM INFORMATION SECTION
-# uname -a dhows kernel version, OS version and architecture
+# uname -a shows kernel version, OS version and architecture
 # ============================================
 
 echo " ==== SYSTEM INFORMATION ===="  >>  "$OUTFILE"   # Section tile (print to screen and file)
