@@ -4,9 +4,9 @@
 
 # Script Name  : networkinfo_dump_basic.sh
 # Author       : Juliette Joseph-Odogbo
-# Date         : 2025-11-08
-# Purpose      : Dump basic network information to the screen and save it to a a file
-# Tested on    : Ubuntu  server 25.04 LTS,
+# Date         : 2025-11-17
+# Purpose      : This script gathers essential system and network information for Ubuntu and Centos servers
+# Tested on    : Ubuntu  server 25.04 LTS and CentOS
 
 #----------------------------------------------------------
 #---- Set up variables-------------------
@@ -18,8 +18,8 @@ DATE="$(date +%Y-%m-%d)"               # current date in YYYY-MM-DD format
 PURPOSE="networkinfo_dump"       # purpose tag for the file
 
 OUTDIR="$HOME/net-reports"        # Directory for saving reports
-
-mkdir -p "$OUTDIR"               # Creates the folder if it dies not exist
+HOSTNAME="$(hostname)" # automatically detect the system name
+mkdir -p "$OUTDIR"               # Creates the folder if it does not exist
 
 OUTFILE="$OUTDIR/${PURPOSE}_${DATE}_${NAME}.txt" # output file saved in my home folder whcih include my name, date and purpose for the  file
 
@@ -27,11 +27,15 @@ OUTFILE="$OUTDIR/${PURPOSE}_${DATE}_${NAME}.txt" # output file saved in my home 
 
 # HEADER SECTION
 
-# =====================================
-
-# Create the header for the report; >> creates or save output to the file
+# ====================================
+# This section print basic information 
 echo " ======================================================="  >> "$OUTFILE"
-
+echo "Created by : $NAME"
+echo "HOSTNAME : "$HOSTNAME"
+echo "Saving clean report to $OUTFILE"
+echo " "
+# Write dome header to the output 
+{
 echo "NETWORK INFORMATION REPORT"  >>  "$OUTFILE"      # Add  title to the report
 
 echo "Created by: $NAME"  >> "$OUTFILE"               # Add my name
@@ -42,17 +46,17 @@ echo "Hostname: $(hostname)"  >> "$OUTFILE"           # prints the system's  hos
 
 echo "File Purpose: $PURPOSE"  >> "$OUTFILE"         # Shows why this file was made
 
-
 echo  "File saved as:  $OUTFILE" >> "$OUTFILE"       # Prints the full save path
 
-echo "========================================"  >> "$OUTFILE"
+echo "========================================" 
 
-echo " "  >> "$OUTFILE"                              # Add a blank line  for spacing
+echo " "
+} >> "$OUTFILE"                             # Add a blank line  for spacing
 
 # ============================================
 
 # SYSTEM INFORMATION SECTION
-
+# uname -a dhows kernel version, OS version and architecture
 # ============================================
 
 echo " ==== SYSTEM INFORMATION ===="  >>  "$OUTFILE"   # Section tile (print to screen and file)
@@ -80,6 +84,8 @@ echo " " >> "$OUTFILE"                                    # Blank line for readi
 # =============================================
 
 # NETWORK INTERFACES SECTION
+# show network card, their IP addreesses and link state 
+# works on both ubuntu and centos
 
 # ===============================================
 
@@ -99,91 +105,81 @@ echo "Command: ip link" >> "$OUTFILE"
 # Displays link names, their states (UP/DOWN, MAC address and the MTU size.
 
 ip link  >> "$OUTFILE"
-
 # Leave a blank line for spacing.
 
 echo " " >>  "$OUTFILE"
 
-# short summary version f all interface
 
-echo "Command: ip -br addr #(brief version if my  system supports this)" >> "$OUTFILE"
+# (Optional: infconfig only if installed- may not exist on both servers.
 
-# Give a simple one-line-per interface list . Sometimes this command does not exixt  on older systems
+if command -v ifconfig  >/dev/null 2>&1;then
+   echo "Command : ifconfig ( Legacy command, works  if net-tools is installed)" >>  "$OUTFILE"
+   ifconfig >> "$OUTFILE"
 
-ip -br addr  >> "$OUTFILE"
-
-# Blank line for spacing
-
-echo " "  >>  "$OUTFILE"
-
-# (Optional) Ubuntu Systems may also have this older command available.
-
-echo "Command: ifconfig  # ( Legacy command, works  if net-tools is installed) " >>  "$OUTFILE"
-
-# shows network interfaces info using  commands  in older Ubuntu versions
-
-# On Ubuntu Server, this command might not work unless I first install the "net-tools' package.
-
-# It is  okay if it shows 'command not found"
-
-ifconfig >>  "$OUTFILE"
+   echo " " >>  "$OUTFILE"
+fi
 
 #============================================
 
 # ROUTING TABLE AND DEFAULT GATEWAY SECTION
 
-# ==========================================
+# shows network routing information and default gateway
 
-# Section ttle  for screen amd file
+#==========================================
+
 
 echo "===== ROUTING TABLE AND GATEWAY ======" >>  "$OUTFILE"
 
+# ip routes works on both Ubuntu and CentOS
 
-# Show the command that is being used
+ if command -v ip  >/dev/null 2>&1; then  
 
-echo "Command : ip route" >> "$OUTFILE"
+   echo "Command: ip route" >> "$OUTFILE"
 
-# Displays the my system's routing table, showing  network trafffic takes.
-
-# Look for the line starting with 'default via' -- that is my server's default gateway.
-
-ip route  >>"$OUTFILE"
+   ip route  >>"$OUTFILE"
 
 # Add a blank line for readability
 
-echo  " "  >>  "$OUTFILE"
+  echo  " "  >>  "$OUTFILE"
+else
 
-# This shows only the default gateway line
+  echo :Ip route command not available" >> "$OUTFILE"
+  echo " " >> "$OUTFILE"
+fi 
 
-echo "Command: ip route | grep default  # to view only the default route"  | tee -a  "$OUTFILE"#
+# Default Gateway only
+if command  -v ip >dev/null 2&1; then
 
-# This filters  only the default gateway from the full list
+   echo "Command: ip route | grep default" >> "$OUTFILE"
+   ip route | grep default >> "$OUTFILE" 2>/dev/null 
+   echo " " >> "$OUTFILE   
+fi 
 
-ip route | grep default  >>  "$OUTFILE"
+# NetworkManager gateway (onlu if nmcli exists)
 
-# Blank line for  readability
-
-echo " "  >> "$OUTFILE"
-
-# check the gateway using NetworkManager  if installed
-
-echo "Command: nmcli dev show | grep -i gateway # ( check using NetworkManager)" >>  "$OUTFILE"
+if command  -v nmcli >dev/null 2>&1; then
 
 # Displays the gateway line from  NetworkManager's setting (if it exists)
 
-nmcli dev show  | grep -i gateway  >> "$OUTFILE"
+   echo "Command: nmcli dev show  | grep -i gateway"  >> "$OUTFILE"
 
-# Add a final blank line before the next section
+   nmcli dev show | grep -i gateway >> "$OUTFILE"
 
-echo  " "  >>  "$OUTFILE"
+   echo  " "  >>  "$OUTFILE"
+else
+
+   echo "nmcli not installed on this system" >> "$OUTFILE"
+   echo " " "$OUTFILE"
+fi
 
 # ==========================================
 
 # DNS AND NAME RESOLUTION SECTION
 
+# shows DNS settings and local hostna,e mappings on either ubuntu or centos
 #=========================================
 
-# Section title for screen and file
+
 
 echo "====== DNS AND NAME RESOLUTION  ======" >>  "$OUTFILE"
 
@@ -213,81 +209,60 @@ cat /etc/hosts  >> "$OUTFILE"
 
 echo " "  >> "$OUTFILE"
 
-# Check DNS details using NetworkManager
+ # Optional: DNS Info from NetworkManager if nmcli is installed 
 
-echo "Command: nmcli dev show | grep  -i dns  # NetworkManager check"  >> "$OUTFILE"
+if command  -v nmcli  >/dev/null 2>&1;then
 
 # Displays the DNS  addresses that NetworkManager is currently using.
 
-nmcli dev show | grep  -i dns  >> "$OUTFILE"
+   echo "Command: nmcli dev show | grep  -i dns"  >> "$OUTFILE"
 
-# Add final blank line
+   nmcli dev show | grep -l dns >> "$OUTFILE"
 
-echo " "  >>  "$OUTFILE"
+   echo " " >> "$OUTFILE"
+   
+else
 
+   echo "nmcli is not installed on this system (skeipping NetworkManager DNS details)." >> "$OUTFILE"
+   echo " " >> "$OUTFILE"
+fi
 # =============================================
 
-# STATIC IP AND CONNECTIVITY TEST SECTION
+#   CONNECTIVITY TEST SECTION
 
 # ============================================
+# This section checks basic network connectivity to verify 
+# that the server can reach the internet and resolve domain names
 
-# Section title for screen and filw
-
-echo " ======= STATIC IP AND CONNECTIVITY TEST ========"   >> "$OUTFILE"
-
-# Explain purpose
-
-echo "This section checks that my server keeos its static IP address and has internet connectivity"
-
-# Show the command used to display  current IP configuration
-
-echo "Command: ip addr # shows my assigned static IP address"  | tee -a "$OUTFILE"
-
-ip addr  >> "$OUTFILE"
-
-# Blank line for readability
-
-# Display the default gateway to confirm it still exist
-
-echo "Command: ip route  | grep default  # confirm  my gateway is set"  >> "$OUTFILE"
-
-ip route | grep default  >> "$OUTFILE"
-
-# Blank Line for readability
-
-echo " "  >> "$OUTFILE"
-
-# Test basic internet  connectivity (ICMP ping)
-
+echo " =======  CONNECTIVITY TEST ========"   >> "$OUTFILE"
+#-------------------Test1: Ping External IP--------------
 echo "Command: ping  -c 4 8.8.8.8  # test raw connectivity to Google DNS" >> "$OUTFILE"
 
 ping  -c 3  8.8.8.8  >> "$OUTFILE"
 
-# Blank line for readability
-
 echo " " >> "$OUTFILE"
 
-# Test name resolution (DNS)
+#--------Test2: Test name resolution (DNS)
 
-echo "Command: ping -c 3 google.com  # tets DNS resolution and connectivity"  >>  "$OUTFILE"
+echo "Command: ping -c 3 google.com    >>  "$OUTFILE"
 
 ping -c 3 google.com  >>"$OUTFILE"
 
-# Blank line for readability
-
 echo " "  >>  "$OUTFILE"
 
-# Check DNS server is active
+#------------------Test3: tracerout (only if installed)---------
+if command -v tracreoute >/dev/null 2>&1; then 
 
-echo "Command; nmcli dev show | grep -i  # confirm which DNS  servers are used" |  tee -a  "$OUTFILE"
+   echo "Command: traceroute google.com: >> "$OUTFILE"
+   traceroute google.com >> "$OUTFILE"
+   echo " " "$OUTFILE"
 
-nmcli dev show | grep -i dns  >> "$OUTFILE"
-
-echo "" >> "$OUTFILE"
-# Final message
-
-echo "Static IP and connc=ectivity verified  successfully if pings  shows 0%  packet loss."  >>  "$OUTFILE"
-
-echo " "  >> "$OUTFILE"
-
+else
+    echo "Traceroute is not installed on this system." >> "$OUTFILE"
+    echo "To install on Ubuntu: sudo apt install traceroute"" >> "$OUTFILE"
+    echo "To install on CentOS: sudo dnf install traceroute" >> "$OUTFILE"
+    echo "" >> "$OUTFILE"
+fi
+echo"-----------------------END OF CONNECTIVITY TEST ------------" >> "$OUTFILE"
+echo "Report saved to: "$OUTFILE
 echo "Report saved to:  $OUTFILE"
