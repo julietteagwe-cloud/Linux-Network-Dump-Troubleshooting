@@ -1,4 +1,38 @@
- 
+ #!/usr/bin/bash
+ #------------------------------------------
+
+# Script Name : networinfo_dump_basic.sh
+# Author      : Juliette Joseph-Odogbo
+# Date        : 2025-11-17
+# Purpose     : This script gathers essential system and network information for Ubuntu and CentOS
+# Tested On   : Ubuntu server  and CentOS server 
+#----------------------------------------------------------
+#---------Set Variables---------------------- These variables store my nam. date, purpose and output path
+NAME="Juliette-Joseph-Odogbo" # my name
+DATE="$(datwe =%Y-%m-%d)"  # current date
+PURPOSE="networkinfo_dump" # purpose of the script
+mkdir -p "$OUTFILE" create the folder if it does not exist
+OUTFILE="$OUTFILE/${PURPOSE}_${DATE}_${NAME}.txt" # output file saved in my home folder which includemy name, date and purpose
+HOSTNAME="$(hostname)" # automatically setect system hostname
+#==========================================================
+# Section Header
+#=======================================
+# This section print basic information
+echo "==================== NETWORK INFORMATIO REPORT ==============="
+echo "Created by : $NAME"
+echo "HOSTNAME   : $HOSTNAME"
+echo "Saving ckean report to: $OUTFILE"
+echo " "
+# write sone header to the output file
+{
+echo "NETWORK INFORMATION REPORT # add title to the report
+echo "Created by $NAME"          # add my name
+echo "Date: $DATE"               # Add the cureent date
+echo "Hostname: $HOSNAME"        # print the system's hostname
+echo "File Purpose: $PURPOSE"    # show why the script was written
+echo File saved as "$OUTFILE"    # print the output patheay
+echo "============================="
+echo " "
 } >> "$OUTFILE"                             # Add a blank line  for spacing
 
 # ============================================
