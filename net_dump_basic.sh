@@ -43,7 +43,7 @@ echo " "
 
 echo " ==== SYSTEM INFORMATION ===="  >>  "$OUTFILE"   # (print to screen and file)
 
-echo " Command: uname -a"  >> "$OUTFILE"               # Shows which command will run
+echo "Command: uname -a"  >> "$OUTFILE"               # Shows which command will run
 
 uname -a  >> "$OUTFILE"                               # Displays kernel, OS, and hardware info
 
@@ -94,7 +94,7 @@ echo " " >>  "$OUTFILE"
 
 # (Optional: infconfig only if installed- may not exist on both servers.
 
-if command -v ifconfig  >/dev/null 2>&1;then
+if command -v ifconfig; then
    echo "Command : ifconfig  Legacy command, works  #if net-tools is installed " >>  "$OUTFILE"
    ifconfig >> "$OUTFILE"
 
@@ -139,7 +139,7 @@ fi
 
 # NetworkManager gateway (onlu if nmcli exists)
 
-if command  -v nmcli >dev/null 2>&1; then
+if command  -v nmcli; then
 
 # Displays the gateway line from  NetworkManager's setting (if it exists)
 
@@ -193,7 +193,7 @@ echo " "  >> "$OUTFILE"
 
  # Optional: DNS Info from NetworkManager if nmcli is installed 
 
-if command  -v nmcli  >/dev/null 2>&1;then
+if command  -v nmcli; then
 
 # Displays the DNS  addresses that NetworkManager is currently using.
 
@@ -233,7 +233,7 @@ ping -c 3 google.com  >>"$OUTFILE"
 echo " "  >>  "$OUTFILE"
 
 #------------------Test3: tracerout (only if installed)---------
-if command -v tracreoute >/dev/null 2>&1; then 
+if command -v tracreoute; then 
 
    echo "Command: traceroute google.com: >> "$OUTFILE"
    traceroute google.com >> "$OUTFILE"
